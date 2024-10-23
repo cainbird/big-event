@@ -3,6 +3,7 @@ package com.example.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,10 +12,14 @@ import com.example.pojo.User;
 import com.example.service.UserService;
 import com.example.utils.JwtUtil;
 import com.example.utils.Md5Util;
+import com.example.utils.ThreadLocalUtil;
 
 import jakarta.validation.constraints.Pattern;
 import java.util.Map;
 import java.util.HashMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/user")
@@ -65,4 +70,19 @@ public class UserController {
 
 
     }
+
+    @GetMapping("/userInfo")
+    public Result<User> userInfo(/* @RequestHeader(name = "Authorization") String token */) {
+        //根据用户名查询用户
+        /* Map<String,Object> map = JwtUtil.parseToken(token);
+        String username = (String) map.get("username"); */
+
+        Map<String,Object> map = ThreadLocalUtil.get();
+
+        String username = (String) map.get("username");
+
+        User user = userService.findByUserName(username);
+        return Result.success(user);
+    }
+    
 }
